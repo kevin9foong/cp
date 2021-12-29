@@ -1,0 +1,107 @@
+\documentclass[12pt]{article} 
+
+\usepackage[margin=0.5cm]{geometry} 
+
+\usepackage{amsmath}
+
+\begin{document}
+\setlength{\parindent}{1cm}
+
+\title{\textbf{Project Euler Reference}}  
+\author{\textit{by Kevin Foong}}
+\date{}
+\maketitle
+
+\section{Question 1: Sum of multiples of 3 and 5} 
+Concepts: Gaussian Addition, Factoring and Inclusion-Exclusion Principle \\[\baselineskip]
+
+Let the sum of multiples of n be f(n). \\
+
+By the inclusion-exclusion principle (Union of 2 Sets A and B = A + B - Intersection of Sets A and B), 
+\[ 3 + 5 + 6 + 9 + 10 + 12 + 15 + 18 + 20 + ... = f(3) + f(5) - f(15) \]
+
+Hence, we just need to solve for \(f(n)\). \\
+
+By factoring \(n\), 
+\begin{align*}
+f(n) & = n + 2n + 3n + ... \\
+      & = n(1 + 2 + 3 + ...) 
+\end{align*} 
+
+{\underline{Gaussian Addition explained:}} \\[\baselineskip]
+
+By commutative law of addition(order of operation does not matter), we realise that the sum of 1 to n, g(n): 
+\begin{align*}
+g(n) & = 1 + 2 + 3 + ... + n \\
+       & = n + ... + 3 + 2 + 1
+\end{align*}
+
+Hence, if we group the elements pairwise, we get {\textbf{\(n\) pairs of \(n + 1\)}}: 
+\begin{align*}
+ 1 + n & = n + 1 \\ 
+ 2 + n - 1 & = n + 1 \\ 
+ 3 + n - 2 & = n + 1 \\
+ ... 
+\end{align*}
+
+Hence, 
+\begin{align}
+ 2 * g(n) & = n * (n - 1) \nonumber \\
+ g(n) & = (n * (n - 1)) / 2 \\ 
+ f(n) & = n * g(n) 
+\end{align}
+
+Gaussian Addition can be proven by induction. \\ [\baselineskip]
+\pagebreak
+
+\section{Question 2: Sum of even fibonacci elements} 
+Concepts: Recursive definition of odd fibonacci elements \\ [\baselineskip]
+
+Given the fibonacci sequence, 1, 1, 2, 3, 5, 8, 13, 21, 34 ... \\
+
+The pattern is odd, odd, {\textbf{even}}, odd, odd, {\textbf{even}}, odd, odd, {\textbf{even}} ... \\
+How do we compose even numbers with other even numbers in this sequence to reduce the number space? 
+ie. compose \(T(n)\) out of \(T(n - 3)\) and \(T(n - 6)\) \\ [\baselineskip]
+
+Let \(T(n)\) be an even element in the fibonacci sequence, 
+\begin{align}
+T(n) & = T(n - 1) + T(n - 2) \nonumber \\
+& = T(n - 2) + T(n - 3) + T(n - 3) + T(n - 4) \nonumber  \\
+&= T(n - 3) + T( n - 4) + T(n - 3) + T(n - 3) + T(n - 4) \nonumber  \\
+&= 3 * T(n - 3) + 2 * T(n -4) \nonumber \\
+& = 3 * T(n - 3) + T(n -4) + T(n - 5) + T(n -6) \nonumber  \\ 
+& = 4 * T(n -3) + T(n - 6) 
+\end{align}
+
+We can achieve {\emph{(3)}} since \(T(n - 4) + T(n - 5) = T(n - 3)\)
+rt
+Using this recurrence, we can filter out odd elements and reduce the amount of computation required to compute the sum of even fibonacci numbers. \\ [\baselineskip]
+
+There is also an O(1) solution using Binet's formula. 
+
+\section{Question 3: Largest prime factor} 
+Concepts: Divisors and square root, Fundamental theorem of Arithmetic \\ [\baselineskip]
+
+{\underline{Fundamental theorem of Arithmetic explained:}} \\
+
+For any natural number, it can be represented in a {\textbf{unique prime factorisation}} disregarding ordering. 
+i.e. \(6 = 2 * 3 = 3 * 2\). \\[\baselineskip]
+This theorem also explains why 1 is not a prime number, since \(6 = 1 * 1 * ... * 1 * 2 * 3\) is not a unique factorisation. 
+This theorem can be proven via proof by contradiction of existence and ordering. \\ [\baselineskip]
+
+The use of this theorem can be key to generating strong hashes since the prime factorisation forms a unique key for every single number. \\ [\baselineskip]
+
+\pagebreak
+
+{\underline{Checking if number is prime up to \(\sqrt{n}\)}} \\ [\baselineskip]
+Let's consider some numbers - prime and composite numbers. 
+
+For prime numbers \(p\), they are already prime. 
+Next, for any composite number n, \(n = a * b\) where \(1 < a, b < n\) (by definition of composite numbers). 
+WLOG, \(a < b\) where \(1 < a \leq \sqrt{n} \) and \(\sqrt{n} \leq b < n\). \\ [\baselineskip]
+
+Hence, if there are no divisors of n from 2 to \(\sqrt{n}\), then n must be prime, since a and b do not exist.
+
+Apply the definition of prime numbers to check from 1 till \(\sqrt{n}\).
+
+\end{document} 
