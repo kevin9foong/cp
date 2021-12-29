@@ -267,6 +267,23 @@ Hence,
  Initially, i attempted this question using a modified Zidane's algorithm - but this didn't consider that the solution must be locally optimal at all times. 
  e.g. ATM bal = 0, { -5, 5 } is invalid despite the total sum \(>=\) which seems valid. 
  
- 
+ \subsection{CF763Div2 B: GameOnRanges}
+ Notice a few heuristics: 
+ \begin{itemize} 
+ 	\item[1.] Each element from 1 to n must be chosen exactly once. 
+	\item[2.] Each bigger range comprises of each smaller range. 
+ \end{itemize} 
+
+Hence, we can sort the ranges by size. 
+For the smallest range with only 1 element, choose that element. 
+Then, choose in the bigger ranges what the smallest elements have not yet chosen. 
+
+To implement, use a TreeSet to store the elements from 1 to n. 
+Sort the ranges from min length to max length. 
+Iterate through ranges and get the ceiling(left) or floor(right) = d for each range, both work! 
+
+\textbf{
+Make sure to remove ' package ' when submitting Java solutions to the judge, it will fail otherwise. (Cost me over 5 hours of debugging, but now I know) 
+} 
  
 \end{document} 
