@@ -19,6 +19,16 @@
 \subsection{Quick multiply/divide by powers of 2} 
 \[ x >>= n\] to divide by \(2^n\), \[ x <<= n \] to multiply by \(2^n\)
 
+\subsection{XOR}
+Properties: 
+\( x \oplus x = 0 \) \\
+\( x \oplus 0 = x \)\\
+hence, no matter how many times 0 is XOR'ed, it'll always be 0. 
+for 1s, the result is if \( occurrence \& 0b1 == 1 \) then 1, else 0.
+
+For some applications: \href{https://florian.github.io/xor-trick/}{XOR Trick} 
+
+
 \subsubsection{Application: log2base with shift right logical}
 we know log base 2 is the number of times a number n has to be divided by 2 to reach 1. \\ 
 express n in binary representation. (e.g. 5 = 0b101)
@@ -141,14 +151,21 @@ Sieve is a complicated sounding but actually simple and brute-force like algorit
 	\item[3] the tracker array stores all primes up to n. 
 \end{itemize} 
 
-{\textbf{To find prime factors of n:}}
+\subsubsection{To find unique prime factorization of n:}
 \href{https://www.geeksforgeeks.org/prime-factorization-using-sieve-olog-n-multiple-queries/}{finding prime factorization with sieve of Eratosthenes} 
 Construct the sieve and for each composite number c, store the smallest prime number p s.t \(k * p = c\) \\ 
 then, we can reconstruct each composite number out of its prime factors by doing n / p = new n and repeating till new n = 1. \\ 
 The prime numbers used is the unique prime factorization of n. 
 
-{\textbf{Reusing sieve for multiple test cases}} 
+\subsubsection{Reusing sieve for multiple test cases}
 Check question constraints, possible to generate reusable prime numbers list. 
+
+\subsubsection{Finding unique prime divisors with sieve:} 
+we can count the number of unique prime divisors for composite numbers which is the number of times a composite number is visited when i * j occurs. \\ 
+Be sure to initialise j from 2 instead of from i since we want to count all the visits. (then for the primes, the number of prime divisors = 1 by prime property) 
+
+\subsubsection{Notes on prime} 
+max number of primes per number is \(\sqrt{n}\) 
 
 \subsection{Finding factors by reducing search space to \(\sqrt{n}\)}
 find all a and b such that \(a * b = n\) \\ 
@@ -262,12 +279,12 @@ Hence,
  We know that Vlad will {\textbf{only ever encounter LCA during his traversal.}}
  Hence, number of LCA = number of times vlad visits a node visited by a friend = min friends.
  
- \subsection {Question 4(ATM and Students 1800)} 
+ \subsection{Question 4(ATM and Students 1800)} 
  
- Initially, i attempted this question using a modified Zidane's algorithm - but this didn't consider that the solution must be locally optimal at all times. 
- e.g. ATM bal = 0, { -5, 5 } is invalid despite the total sum \(>=\) which seems valid. 
+ Initially, i attempted this question using a modified Zadane's algorithm - but this didn't consider that the solution must be locally optimal at all times. 
+ e.g. ATM bal = 0, (-5, 5) is invalid despite the total sum \(>=\) which seems valid. 
  
- \subsection{CF763Div2 B: GameOnRanges}
+ \subsection{CF763Div2 B: GameOnRanges:}
  Notice a few heuristics: 
  \begin{itemize} 
  	\item[1.] Each element from 1 to n must be chosen exactly once. 
@@ -282,8 +299,83 @@ To implement, use a TreeSet to store the elements from 1 to n.
 Sort the ranges from min length to max length. 
 Iterate through ranges and get the ceiling(left) or floor(right) = d for each range, both work! 
 
-\textbf{
-Make sure to remove ' package ' when submitting Java solutions to the judge, it will fail otherwise. (Cost me over 5 hours of debugging, but now I know) 
-} 
+\textbf{Make sure to remove ' package ' when submitting Java solutions to the judge, it will fail otherwise. (Cost me over 5 hours of debugging, but now I know)} 
+
+\subsection{CF763Div2 C: Balanced Stone Heaps} 
+Trying to find the min (optimisation problem) \\
+Hence, in the toolbox, we can use DP or binary search. \\ [\baselineskip] 
+
+Notice that if we can find possible x for min value of smallest heap, then y < x is also possible. Hence, this fulfils binary search condition. \\
+Simply perform binary search for largest x. \\ [\baselineskip]
+
+The challenge now is how to check if each x is valid? \\
+Idea: {\textbf{start from right to left}}. Why? at the rightmost, the value of each heap cannot be changed. we can set an 'x' and then greedily donate from heap i such that at least x left. \\
+However, theres another catch. What if initially the value at the heap is smaller than donated i - x? \\ 
+hence, we can only pass the min between original i and (donated i - x) \\ [\baselineskip]
+
+Proof that each index greater or equals 2 will always have at least x: \\ 
+we need to check that for each heapAfter[i] greater or equals min \\ 
+if give heapAfter[i] - x, will always have at least x. \\ 
+if give original, that means original > heapAfter[i] - x, hence, will have > x left. \\ 
+hence, will always have at least x. 
+
+\begin{verbatim} 
+ static boolean isValidMin(int[] heaps, int n, int min) {
+        // how to check if min is valid
+        // start from back
+        int[] heapAfter = heaps.clone();
+        for (int i = n - 1; i >= 2; i--) {
+            if (heapAfter[i] < min) {
+                return false;
+            }
+            // how much to give? as much st. still have k
+            int toGive = Math.min(heapAfter[i] - min, heaps[i]);
+            int d = toGive / 3;
+            heapAfter[i - 1] = heapAfter[i - 1] + d;
+            heapAfter[i - 2] = heapAfter[i - 2] + 2 * d;
+        }
+        return heapAfter[0] >= min && heapAfter[1] >= min;
+    }
+\end{verbatim} 
+
+\subsection{Goodbye2021 B: Mirror on a String} 
+find smallest lexicographical string after mirror. 
+
+Heuristic: 
+Find longest decreasing sequence, if duplicates, see the following 2 cases. \\ 
+Quite a simple question with some edge cases which may not be easy to find if you dont test all the possible scenarios. \\ 
+
+if only 1 decreasing, then make the string shortest. \\ 
+e.g. 'aabab' : 'aa' is smaller than 'aaaa' 
+
+if more than 1 decreasing, then make the string longest. 
+e.g. 'cbbbaaad': 'cbbaaaaaabbc' is smaller than 'cbbaabbc'. 
+ 
+ Proof that solution works: 
+ first part of mirror will always be a prefix of original string \\ 
+ second part we want to have the smallest, hence, we want it to be as small as possible hence increasing as index grows (hence, the first part has to be decreasing order as second part is a mirror) \\ 
+ if the decrement has >1 unique character, then we want to make the increasing subsequence as late as possible, hence find longest duplicate. \\ 
+ if only 1, then the mirror will not be increasing but constant, hence we make it as short as possible. 
+ 
+ \begin{verbatim} 
+    public static void main(String[] args) {
+        FastScanner fs = new FastScanner();
+
+        long t = fs.nextInt();
+        while(t-- >0) {
+            // get input
+            int n = fs.nextInt();
+            String s = fs.next();
+            int i = 0;
+            while (i + 1 < n && s.charAt(i) > s.charAt(i + 1)) {
+                i++;
+                while (i + 1 < n && s.charAt(i) == s.charAt(i + 1)) {
+                    i++;
+                }
+            }
+            System.out.println(new StringBuilder(s.substring(0, i + 1)).append(new StringBuilder(s.substring(0, i + 1)).reverse()));
+        }
+    }
+ \end{verbatim} 
  
 \end{document} 

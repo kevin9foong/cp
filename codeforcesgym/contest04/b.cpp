@@ -41,6 +41,7 @@ void solve_for(int64_t l, int64_t r) {
     // if d still 1, means that the current l is used. 
     if (d == -1) {
         ans.push_back(make_tuple(l, r, l)); 
+        if (ranges.find(make_))
         solve_for(l + 1, r); 
     }
 }
