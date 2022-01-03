@@ -11,6 +11,9 @@
 \date{}
 \maketitle
 
+\section{Time complexity} 
+If log(n) is involved, means that problem is divided and split (usually into 2/half). Almost always binary search/Merge Sort/pivoting solution. 
+
 \section{Maths} 
 
 \subsection{Check number parity fast}
@@ -20,7 +23,8 @@
 \[ x >>= n\] to divide by \(2^n\), \[ x <<= n \] to multiply by \(2^n\)
 
 \subsection{XOR}
-Properties: 
+Properties: \\
+XOR is associative \\
 \( x \oplus x = 0 \) \\
 \( x \oplus 0 = x \)\\
 hence, no matter how many times 0 is XOR'ed, it'll always be 0. 
@@ -188,6 +192,196 @@ Addition, Multiplication, Exponentiation and Division properties:
 \subsection{Fibonacci numbers are periodic modulo any number:}
 e.g. the period for fibo sequence mod 10 is 60. this means every 60 elements, the same sequence repeats itself. 
 Different periods for different mod n but they will eventually repeat. 
+
+\section{Data Structures}
+
+\subsection{Disjoint Set Problems - maintain sets which can be combined and check if they are connected:} 
+Union-find: 2 methods provided (find - check if connected and union - combine 2 sets)
+
+for log(n) find and union operations, use weighted union-find which links the smaller set to the larger set. 
+implement with 2 int arrays. (if non integer values, use hashing + open addressing) 
+
+Use path compression with grandparent assigning strategy for better performance. \\ [\baselineskip] 
+
+\noindent Java method implementation: 
+\begin{verbatim}
+int getParent(int a, int[] componentId) {
+                while (a != componentId[a]) {
+                    // path compression by setting to grandparent
+                    componentId[a] = componentId[componentId[a]];
+                    a = componentId[a];
+                }
+                return a;
+            }
+
+            boolean find(int a, int b, int[] componentId) {
+                return getParent(a, componentId) == getParent(b, componentId);
+            }
+
+            void union(int a, int b, int[] componentId, int[] size) {
+                int pa = getParent(a, componentId);
+                int pb = getParent(b, componentId);
+                // weighted union for log(n) time complexity 
+                if (size[pa] > size[pb]) {
+                    componentId[pb] = pa;
+                    size[pa] = size[pa] + size[pb];
+                } else {
+                    componentId[pa] = pb;
+                    size[pb] = size[pb] + size[pa];
+                }
+            } 
+\end{verbatim}
+
+\subsection{Heap} 
+
+\section{Techniques} 
+
+\subsection{Prefix Sum Array} 
+Stores of the sum of a chosen attribute up to the position i of the given array. 
+
+\subsection{Complete search/Backtracking} 
+Idea: generate all possible solutions to the problem (solution space) using brute force, then select/count the optimal solution.  \\ 
+Usually involves recursion (or iteratively). \\ 
+Many backtracking implementations are actually just DFS implemented. \\
+
+If no TLE concerns, can solve almost any problem. \\ 
+Otherwise, optimise with greedy or find the optimal substructure(recursive definition) for DP.  \\ 
+
+Applications: generating subsets or permutations \\ 
+
+{\textbf{To generate the search cases, we consider the cases (e.g. either include or dont include) and generate all possible solutions}} 
+
+for subsets, we can represent each subset as a binary sequence  \\ 
+\noindent Generating subsets containing 0 to n iteratively: 
+\begin{verbatim} 
+	for (int b = 0; b < (1 << n); i++) {
+		// b is the binary sequence representing a subset
+	} 
+
+	// generate the subset from binary sequence 
+	// e.g. 1001 is {0, 3} 
+	vector<int> subset; 
+	for (int i = 0; i < n; i++) {
+		if(b \& (1 << i)) subset.push_back(i); 
+	}
+\end{verbatim}  
+
+\noindent Generating permutations containing 0 to (n-1) recursively: 
+\begin{verbatim} 
+#include<vector> 
+using namespace std; 
+
+int searchPerm(vector<int>& perm, vector<int>& chosen, int n) {
+    if (perm.size() == n) { 
+        // perm generated 
+    } else {
+        for (int i = 0; i < n; i++) {
+            if (chosen[i]) continue; 
+            chosen[i] = true; 
+            perm.push_back(i); 
+            // search assuming i added at this position 
+            searchPerm(perm, chosen, n);
+
+            // else i not added in this position, add another (next) elem at 
+            // current position
+            chosen[i] = false; 
+            perm.pop_back(); 
+        }
+    }
+}
+
+int main() {
+    vector<int> perm; 
+    int n = 5; 
+    // form perm including {0, 1, 2, 3, 4} 
+    vector<bool> chosen; 
+    for (int i = 0; i < n; i++) {
+        chosen[i] = false; 
+    }
+}
+\end{verbatim}  
+
+\subsubsection{Backtracking:} 
+Backtracking is a form of complete search: \\ 
+It begins with an empty solution and then extends the solution step-by-step checking all step possibilities if its valid and then forming a solution of valid steps. \\ 
+See Coin change, N-Queens and Word Search problems. \\ 
+
+Time complexity is usually exponential. \\ 
+Hence, we want to {\textbf{optimise via pruning the search space and noticing ASAP when a partial solution cannot be extended to a full solution and pruning that out.}} \\
+
+Another technique is the {\textbf{Meet in the middle}} technique which works in some cases. \\ 
+
+Idea is to split the set into 2 and perform a complete search in both, then combine them together. This reduces the search space from \(2^n to 2^(n/2)\) \\
+e..g. to find the subsets that sum up to n. we can split the set into 2 sets, find the subsets and corresponding sums of each set, then solve via 2-sum problem instead of generating \(2^n\) subsets. 
+
+\subsection{Dynamic Programming} 
+key is to find the recursive formulation/recurrence + transition (ie. {\textbf{Optimal substructure}} \\ 
+may not always be easy to find this formulation \\ 
+then memoize {ie. {\textbf{Overlapping subproblems}} \\ 
+
+\noindent Example of possible recurrence: \\ 
+Let dp(x) be ... \\ 
+dp(0) = 0 (base case) \\ 
+dp(x) = dp(x-1) + a[x] \\ 
+
+
+Applications: used for optimisation(may be asked to reconstruct the optimal solution) and counting questions 
+
+\begin{verbatim} 
+class Solution {
+    public int lengthOfLIS(int[] nums) {
+        // idea is d[i] = smallest elem s.t i is the LIS  
+        // d[i] = elem after d[i - 1] s.t d[i] > d[i - 1]
+        // what if d[i - 1] is updated to something smaller? d[i] will still hold true for earlier d[i-1] so d[i] is still true 
+        // otherwise d[i] is updated and must hold true for newest d[i - 1]
+        if (nums.length <= 0) {
+            return 0; 
+        }
+        int[] d = new int[nums.length]; 
+        for (int i = 0; i < nums.length; i++) {
+            d[i] = 10001; 
+        }
+        int len = 0; // +1 to get actual 
+        d[0] = nums[0]; 
+        
+        for (int i = 1; i < nums.length; i++) {
+            int elem = nums[i]; 
+            // check if can append to end 
+            if (elem > d[len]) {
+                // System.out.println(elem); 
+                len++; 
+                d[len] = elem; 
+            } 
+            else {
+                // find index of largest x < elem, update the one next to it 
+                // d[i - 1] < d[i] hence can use bn search 
+                int lo = 0; 
+                int hi = len; 
+                while (lo < hi) {
+                    int mid = lo + (hi - lo) / 2; 
+                    // 1 2 6 7 8 -> 3 find smallest larger than 3
+                    if (d[mid] > elem) {
+                        hi = mid;
+                    } else {
+                        lo = mid + 1; 
+                    }
+                }
+                
+                // deal with duplicates - dont update if a duplicate exists 
+                if ((lo + 1 <= len && (d[lo + 1] == elem) || d[lo] == elem) || (lo - 1 >= 0 && d[lo - 1] == elem)) {
+                    
+                }
+                else if (d[lo] > elem) {
+                    d[lo] = elem;
+                } else if (lo + 1 <= len && d[lo + 1] > elem) {
+                    d[lo + 1] = elem;
+                }
+            }
+        }
+        return len + 1; 
+    }
+}
+\end{verbatim} 
 
 \section{Sorting Algorithms} 
 
